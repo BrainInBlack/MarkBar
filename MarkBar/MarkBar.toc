@@ -1,0 +1,11 @@
+## Interface: 40000
+## Title: MarkBar
+## Author: BrainInBlack
+## Version: 4.0.1 Alpha1
+## Notes: Toolbar to quickly assign raid targets and permanent mark of group members.
+## Notes-deDE: Symbolleiste zum schnellen zuweisen von Raidzielen und permanenten markieren von Gruppenmitgliedern.
+## SavedVariables: MarkBarSettings
+lang\ui.lua
+lang\output.lua
+core.lua
+frame\bar.xml
