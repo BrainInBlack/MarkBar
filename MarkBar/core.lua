@@ -2,7 +2,7 @@ Marbar = {
 
 	title = 	"MarkBar";
 	author = 	"BrainInBlack";
-	version = 	"4.0.2a - Alpha 1";
+	version = 	"4.0.2b - RC1";
 	vid = 		3;
 
 	function OnLoad(self)
