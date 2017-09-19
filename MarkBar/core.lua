@@ -1,37 +1,32 @@
--- GlobalsVars ->
-	MarkBar = {}
-	MarkBar.title = "MarkBar";
-	MarkBar.author = "BrainInBlack";
-	MarkBar.version = "4.0.1a - Alpha2.3";
-	MarkBar.vid = "1";
+Marbar = {
 
+	title = 	"MarkBar";
+	author = 	"BrainInBlack";
+	version = 	"4.0.2a - Alpha 1";
+	vid = 		3;
 
--- OnLoad ->
-	function MarkBar.OnLoad(self)
-
-	-- ToolbarEvents ->
+	function OnLoad(self)
 		self:RegisterEvent("ADDON_LOADED");
 		self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 		self:RegisterEvent("PARTY_LEADER_CHANGED");
 
-		-- TempVars ->
-		MarkBar.LastUpdate = 0;
-		MarkBar.InRaid = false;
-		MarkBar.InParty = false
-		MarkBar.Solo = false;
-		MarkBar.ClosedByUser = false;
-		MarkBar.PermaMarks = nil;
-		MarkBar.PermaMarksRun = false;
-		MarkBar.ConfigLoaded = false;
+		LastUpdate = 0;
+		InRaid = false;
+		InParty = false;
+		Solo = true;
+		ClosedByUser = false;
+		PermaMarks = nil;
+		PermaMarksRun = false;
+		ConfigLoaded = false;
 
-		-- SlashCommands ->
 		SLASH_MARKBAR1 = "/markbar";
 		SLASH_MARKBAR2 = "/mb";
 		SlashCmdList["MARKBAR"] = function(msg)
-			MarkBar.SlashCommands(self, msg);
+			SlashCommands(self, msg);
 		end
-
 	end
+
+}
 
 
 -- OnEvent ->
@@ -61,7 +56,7 @@
 			if(not MarkBarSettings) then
 				MarkBar.Print(MarkBar_GENERAL_FIRST_RUN);
 				MarkBarSettings = {}
-				MarkBarSettings.vid = "1";
+				MarkBarSettings.vid = "2";
 				MarkBarSettings.ToolbarAutoShow = true;
 				MarkBarSettings.ToolbarFade = false;
 				MarkBarSettings.ToolbarLock = false;
@@ -75,8 +70,12 @@
 				MarkBarSettings.MarkAlphaFade = .55;
 				MarkBarSettings.MarkBorder = {r = .3, g = .3, b = .3}
 				MarkBarSettings.PermaMarkBorder = {r = .1, g = .5, b = .1}
+				MarkBarSettings.FlareToolbar = true; --2
+				MarkBarSettings.ReadyCheck = true; --2
 			elseif(MarkBar.vid ~= MarkBarSettings.vid) then
-				-- AddChanges NYI
+				MarkBarSettings.FlareToolbar = true; --2
+				MarkBarSettings.ReadyCheck = true; --2
+				MarkBarSettings.vid = "2";
 			end
 
 			-- ToolbarScale ->
@@ -134,6 +133,12 @@
 			if(MarkBarSettings.ToolbarAutoShow) then
 				self:Show();
 			end
+			if(MarkBarSettings.FlareToolbar) then
+				MarkBarFlareBar:Show();
+			end
+			if(MarkBarSettings.ReadyCheck) then
+				MarkBarReadyCheckBar:Show();
+			end
 			return;
 		end
 
@@ -145,6 +150,12 @@
 			if(MarkBarSettings.ToolbarAutoShow) then
 				self:Show();
 			end
+			if(MarkBarFlareBar:IsVisible()) then
+				MarkBarFlareBar:Hide();
+			end
+			if(MarkBarSettings.ReadyCheck) then
+				MarkBarReadyCheckBar:Show();
+			end
 			return;
 		end
 
@@ -154,11 +165,17 @@
 		if(MarkBarSettings.ToolbarAutoShow) then
 			self:Hide();
 		end
+		if(MarkBarFlareBar:IsVisible()) then
+			MarkBarFlareBar:Hide();
+		end
+		if(MarkBarReadyCheckBar:IsVisible()) then
+			MarkBarReadyCheckBar:Hide();
+		end
 		if(UnitInRaid("player")) then
 			MarkBar.Solo = false;
-			return;
+		else
+			MarkBar.Solo = true;
 		end
-		MarkBar.Solo = true;
 
 	end
 
@@ -190,7 +207,7 @@
 		local frame = self:GetName();
 
 		-- Buttons ->
-		if(frame ~= "MarkBarToolbar") then
+		if(frame ~= "MarkBarToolbar" and frame ~= "MarkBarFlareBar" and frame ~= "MarkBarReadyCheckBar") then
 			self:SetAlpha(MarkBarSettings.MarkAlpha);
 			if(MarkBarSettings.ToolbarTooltip) then
 				MarkBar.Tooltip(self);
@@ -211,7 +228,7 @@
 		local frame = self:GetName();
 
 		-- MarkButtons ->
-		if(frame ~= "MarkBarToolbar") then
+		if(frame ~= "MarkBarToolbar" and frame ~= "MarkBarFlareBar" and frame ~= "MarkBarReadyCheckBar") then
 			self:SetAlpha(MarkBarSettings.MarkAlphaFade);
 			if(MarkBarSettings.ToolbarTooltip) then
 				GameTooltip:Hide();
@@ -454,27 +471,88 @@ function MarkBar.Tooltip(self)
 	-- Start/StopButton ->
 	if(frame == "MarkBarPermaControlRun") then
 		if(MarkBar.PermaMarks) then
-			GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_STOP);
-			GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_STOP_HINT);
-			return;
+			if(MarkBar.PermaMarksRun) then
+				GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_STOP);
+				GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_STOP_HINT);
+				return;
+			else
+				GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_START);
+				GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_START_HINT);
+				return;
+			end
 		else
 			GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_START);
-			GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_START_HINT);
+			GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_NOT_SET);
 			return;
 		end
 	end
 
 	-- DeleteButton ->
 	if(frame == "MarkBarPermaControlDelete") then
-		GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_DELETE);
-		GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_DELETE_HINT);
-		return;
+		if(MarkBar.PermaMarks) then
+			GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_DELETE);
+			GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_DELETE_HINT);
+			return;
+		else
+			GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_DELETE);
+			GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_NOT_SET);
+			return;
+		end
 	end
 
 	-- ProfileButton ->
 	if(frame == "MarkBarPermaProfile") then
 		GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_PROFILE);
 		GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_PROFILE_HINT);
+		return;
+	end
+
+	-- ReadyCheck ->
+	if(frame == "MarkBarReadyCheckBarButton") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_READY);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_READY_HINT);
+		return;
+	end
+
+	-- FlareBlue ->
+	if(frame == "MarkBarFlareBarBlue") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_FLARE_BLUE);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_FLARE_BLUE_HINT);
+		return;
+	end
+
+	-- FlareGreen ->
+	if(frame == "MarkBarFlareBarGreen") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_FLARE_GREEN);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_FLARE_GREEN_HINT);
+		return;
+	end
+
+	-- FlarePurple ->
+	if(frame == "MarkBarFlareBarPurple") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_FLARE_PURPLE);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_FLARE_PURPLE_HINT);
+		return;
+	end
+
+	-- FlareRed ->
+	if(frame == "MarkBarFlareBarRed") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_FLARE_RED);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_FLARE_RED_HINT);
+		return;
+	end
+
+	-- FlareWhite ->
+	if(frame == "MarkBarFlareBarWhite") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_FLARE_WHITE);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_FLARE_WHITE_HINT);
+		return;
+	end
+
+	-- FlareDelete ->
+	if(frame == "MarkBarFlareBarDelete") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_FLARE_DELETE);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_FLARE_DELETE_HINT);
 		return;
 	end
 end

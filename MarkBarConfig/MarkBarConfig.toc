@@ -1,7 +1,7 @@
 ## Interface: 40000
 ## Title: MarkBarConfig
 ## Author: BrainInBlack
-## Version: 4.0.1a - Alpha2.3
+## Version: 4.0.1a - Beta1.0 RC1
 ## Notes: ConfigPanel for MarkBar
 ## Notes-deDE: Einstellungen für MarkBar
 ## Dependencies: MarkBar

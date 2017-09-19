@@ -23,4 +23,10 @@
 		MarkBar_SETTINGS_SCALE = "Toolbar Scale";
 		MarkBar_SETTINGS_SCALE_TIP = "Toolbar Scale:";
 		MarkBar_SETTINGS_SCALE_HINT = COLOR_WHITE.."Change the scale of the toolbar."..COLOR_END;
+		MarkBar_SETTINGS_READY = "Ready Check Bar";
+		MarkBar_SETTINGS_READY_TIP = "Ready Check:";
+		MarkBar_SETTINGS_READY_HINT = COLOR_WHITE.."Enables the Ready-Check-Bar."..COLOR_END;
+		MarkBar_SETTINGS_FLARE = "Flare Bar";
+		MarkBar_SETTINGS_FLARE_TIP = "Flare Bar:";
+		MarkBar_SETTINGS_FLARE_HINT = COLOR_WHITE.."Enables the Flare-Bar."..COLOR_END;
 		MarkBar_SETTINGS_CLOSE = "Close";

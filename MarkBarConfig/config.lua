@@ -50,6 +50,13 @@ function MarkBarConfig.OnShow()
 	MarkBarConfigScale:SetValueStep(.01);
 	MarkBarConfigScale:SetValue(MarkBarSettings.ToolbarScale);
 
+	-- ReadyCheck ->
+	MarkBarConfigReadyCheck.text:SetText(MarkBar_SETTINGS_READY);
+	MarkBarConfigReadyCheck:SetChecked(MarkBarSettings.ReadyCheck);
+
+	-- Flares ->
+	MarkBarConfigFlare.text:SetText(MarkBar_SETTINGS_FLARE);
+	MarkBarConfigFlare:SetChecked(MarkBarSettings.FlareToolbar);
 end
 
 -- OnClick ->
@@ -92,6 +99,36 @@ function MarkBarConfig.OnClick(self, button)
 		else
 			MarkBarSettings.ToolbarFade = false;
 			MarkBarToolbar:SetAlpha(MarkBarSettings.ToolbarAlpha);
+		end
+	end
+
+	-- ReadyCheck ->
+	if(frame == "MarkBarConfigReadyCheck") then
+		if(self:GetChecked()) then
+			MarkBarSettings.ReadyCheck = true;
+			if(MarkBar.InRaid or MarkBar.InParty) then
+				MarkBarReadyCheckBar:Show();
+			end
+		else
+			MarkBarSettings.ReadyCheck = false;
+			if(MarkBar.InRaid or MarkBar.InParty) then
+				MarkBarReadyCheckBar:Hide();
+			end
+		end
+	end
+
+	-- Flare ->
+	if(frame == "MarkBarConfigFlare") then
+		if(self:GetChecked()) then
+			MarkBarSettings.FlareToolbar = true;
+			if(MarkBar.InRaid) then
+				MarkBarFlareBar:Show();
+			end
+		else
+			MarkBarSettings.FlareToolbar = false;
+			if(MarkBar.InRaid) then
+				MarkBarFlareBar:Hide();
+			end
 		end
 	end
 
@@ -164,6 +201,20 @@ function MarkBarConfig.Tooltip(self)
 	if(frame == "MarkBarConfigAlpha") then
 		GameTooltip:SetText(MarkBar_SETTINGS_ALPHA_TIP);
 		GameTooltip:AddLine(MarkBar_SETTINGS_ALPHA_HINT);
+		return;
+	end
+
+	-- ReadyCheck ->
+	if(frame == "MarkBarConfigReadyCheck") then
+		GameTooltip:SetText(MarkBar_SETTINGS_READY_TIP);
+		GameTooltip:AddLine(MarkBar_SETTINGS_READY_HINT);
+		return;
+	end
+
+	-- Flare ->
+	if(frame == "MarkBarConfigFlare") then
+		GameTooltip:SetText(MarkBar_SETTINGS_FLARE_TIP);
+		GameTooltip:AddLine(MarkBar_SETTINGS_FLARE_HINT);
 		return;
 	end
 

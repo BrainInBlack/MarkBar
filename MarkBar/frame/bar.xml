@@ -65,7 +65,7 @@
 		</CheckButton>
 	<!-- MiniButtons End -->
 	
-	<!-- PermaMarkButtons Start -->
+	<!-- PermaMarkControlButtons Start -->
 		<CheckButton name="MarkBarPermaControlButtonTemplate" virtual="true" enableMouse="true">
 			<Size x="33" y="12" />
 			<Backdrop bgFile="Interface\AddOns\MarkBar\tex\background.blp" edgeFile="Interface\AddOns\MarkBar\tex\border.tga" tile="false">
@@ -73,17 +73,20 @@
 			</Backdrop>
 			<Layers>
 				<Layer level="OVERLAY">
-					<FontString parentKey="text" font="Interface\AddOns\MarkBar\tex\font.ttf">
+					<FontString parentKey="text" font="Interface\AddOns\MarkBar\tex\font.ttf" inherits="MarkBarFontShadow">
 						<FontHeight val="10"/>
 						<Color r="0.6" g="0.6" b="0.6" />
 						<Size x="33" y="12" />
 						<Anchors>
-							<Anchor point="CENTER" x="0" y="-0.5" />
+							<Anchor point="CENTER" />
 						</Anchors>
 					</FontString>
 				</Layer>
 			</Layers>
 			<Scripts>
+				<OnLoad>
+					self:RegisterForClicks("LeftButtonUp");
+				</OnLoad>
 				<OnEnter>
 					MarkBar.OnEnter(self);
 				</OnEnter>
@@ -92,12 +95,42 @@
 				</OnLeave>
 			</Scripts>
 		</CheckButton>
-	<!-- PermaMarkButtons End -->
+	<!-- PermaMarkControlButtons End -->
+
+	<!-- MacroButtonTemplate Start -->
+		<Button name="MarkBarMacroButtonTemplate" inherits="SecureActionButtonTemplate" virtual="true" enableMouse="true">
+			<Size x="8" y="8" />
+			<Backdrop bgFile="Interface\AddOns\MarkBar\tex\flare.blp" tile="false" /> <!-- Placeholder -->
+			<Attributes>
+				<Attribute name="type1" value="macro" />
+			</Attributes>
+			<Scripts>
+				<OnLoad>
+					self:RegisterForClicks("LeftButtonUp");
+				</OnLoad>
+				<OnEnter>
+					MarkBar.OnEnter(self);
+				</OnEnter>
+				<OnLeave>
+					MarkBar.OnLeave(self);
+				</OnLeave>
+			</Scripts>
+		</Button>
+	<!-- MacroButtonTemplate End -->
+
+	<!-- FontStuff Start -->
+		<FontString name="MarkBarFontShadow" virtual="true">
+			<Shadow>
+				<Offset x="1.5" y="-1.5" />
+				<Color r="0" g="0" b="0" />
+			</Shadow>
+		</FontString>
+	<!-- FontStuff End -->
 
 <!-- Templates End -->
 
 <!-- Toolbar Start -->
-	<Frame name="MarkBarToolbar" parent="UIParent" frameStrata="HIGH" enableMouse="true" movable="true" hidden="true" clampedToScreen="true">
+	<Frame name="MarkBarToolbar" parent="UIParent" frameStrata="HIGH" enableMouse="true" movable="true" clampedToScreen="true" hidden="true">
 		<Size  x="306" y="34" />
 		<Anchors>
 			<Anchor point="CENTER" relativeTo="UIParent" x="0" y="0" />
@@ -249,12 +282,12 @@
 				</Backdrop>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString font="Interface\AddOns\MarkBar\tex\font.ttf" text="Default">
+						<FontString font="Interface\AddOns\MarkBar\tex\font.ttf" inherits="MarkBarFontShadow" text="Default">
 							<FontHeight val="10" />
 							<Color r="0.6" g="0.6" b="0.6" />
 							<Size x="70" y="12" />
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="-0.5" />
+								<Anchor point="CENTER" />
 							</Anchors>
 						</FontString>
 					</Layer>
@@ -269,6 +302,168 @@
 				</Scripts>
 			</CheckButton>
 		<!-- OtherButtons End -->
+
+		<!-- ReadyCheck Start -->
+			<Frame name="MarkBarReadyCheckBar" hidden="true">
+				<Size x="60" y="14" />
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="10" y="-14" />
+				</Anchors>
+				<Backdrop bgFile="Interface\AddOns\MarkBar\tex\flare_bg.blp" tile="false" />
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropColor(.6, .6, .6);
+					</OnLoad>
+					<OnEnter>
+						MarkBar.OnEnter(self);
+					</OnEnter>
+					<OnLeave>
+						MarkBar.OnLeave(self);
+					</OnLeave>
+				</Scripts>
+				<Frames>
+					<CheckButton name="$parentButton" enableMouse="true">
+						<Size x="60" y="14" />
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("LeftButtonUp");
+								self:SetAlpha(.55);
+							</OnLoad>
+							<OnEnter>
+								MarkBar.OnEnter(self);
+							</OnEnter>
+							<OnLeave>
+								MarkBar.OnLeave(self);
+							</OnLeave>
+							<OnClick>
+								DoReadyCheck();
+							</OnClick>
+						</Scripts>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="text" font="Interface\AddOns\MarkBar\tex\font.ttf" inherits="MarkBarFontShadow" text="Ready Check">
+									<FontHeight val="8" />
+									<Color r="0.6" g="0.6" b="0.6" />
+									<Size x="60" y="14" />
+									<Anchors>
+										<Anchor point="CENTER" x="1" y="2" />
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</CheckButton>
+				</Frames>
+			</Frame>
+		<!-- ReadyCheck End -->
+
+		<!-- Flares Start -->
+			<Frame name="MarkBarFlareBar" hidden="true">
+				<Size x="94" y="14" />
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="70" y="-14" />
+				</Anchors>
+				<Backdrop bgFile="Interface\AddOns\MarkBar\tex\flare_bg.blp" tile="false" />
+				<Scripts>
+					<OnLoad>
+						self:SetBackdropColor(.6, .6, .6);
+					</OnLoad>
+					<OnEnter>
+						MarkBar.OnEnter(self);
+					</OnEnter>
+					<OnLeave>
+						MarkBar.OnLeave(self);
+					</OnLeave>
+				</Scripts>
+				<Frames>
+					<Button name="$parentBlue" inherits="MarkBarMacroButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="12" y="2" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetAlpha(.55);
+								self:SetBackdropColor(.3, .3, 1);
+								self:SetAttribute("macrotext1", "/click CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton\n/click DropDownList1Button1")
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentGreen" inherits="MarkBarMacroButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="24" y="2" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetAlpha(.55);
+								self:SetBackdropColor(.3, 1, .3);
+								self:SetAttribute("macrotext1", "/click CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton\n/click DropDownList1Button2")
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentPurple" inherits="MarkBarMacroButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="36" y="2" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetAlpha(.55);
+								self:SetBackdropColor(.55, .3, 1);
+								self:SetAttribute("macrotext1", "/click CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton\n/click DropDownList1Button3")
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentRed" inherits="MarkBarMacroButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="48" y="2" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetAlpha(.55);
+								self:SetBackdropColor(1, .2, .2);
+								self:SetAttribute("macrotext1", "/click CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton\n/click DropDownList1Button4")
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentWhite" inherits="MarkBarMacroButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="60" y="2" />
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetAlpha(.55);
+								self:SetBackdropColor(.95, .95, .95);
+								self:SetAttribute("macrotext1", "/click CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton\n/click DropDownList1Button5")
+							</OnLoad>
+						</Scripts>
+					</Button>
+					<Button name="$parentDelete" inherits="SecureActionButtonTemplate" enableMouse="true">
+						<Size x="8" y="8" />
+						<Anchors>
+							<Anchor point="LEFT" x="74" y="2" />
+						</Anchors>
+						<Backdrop bgFile="Interface\AddOns\MarkBar\tex\flare_del.blp" tile="false" />
+						<Attributes>
+							<Attribute name="type1" value="macro" />
+						</Attributes>
+						<Scripts>
+							<OnLoad>
+								self:RegisterForClicks("LeftButtonUp");
+								self:SetAlpha(.55);
+								self:SetAttribute("macrotext1", "/click CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton\n/click DropDownList1Button6")
+							</OnLoad>
+							<OnEnter>
+								MarkBar.OnEnter(self);
+							</OnEnter>
+							<OnLeave>
+								MarkBar.OnLeave(self);
+							</OnLeave>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		<!-- LeaderTools End -->
 
 		</Frames>
 	</Frame>

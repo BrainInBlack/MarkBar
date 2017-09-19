@@ -114,20 +114,11 @@
 		</CheckButton>
 	<!-- ButtonTemplate End -->
 
-	<!-- FontStuff Start -->
-		<FontString name="MarkBarFontShadow" virtual="true">
-			<Shadow>
-				<Offset x="1.5" y="-1.5" />
-				<Color r="0" g="0" b="0" />
-			</Shadow>
-		</FontString>
-	<!-- FontStuff End -->
-
 <!-- Templates End -->
 
 <!-- MainFrame Start -->
 	<Frame name="MarkBarConfig" frameStrata="DIALOG" enableMouse="true" movable="true" hidden="true" clampedToScreen="true">
-		<Size x="240" y="210" />
+		<Size x="240" y="230" />
 		<Anchors>
 			<Anchor point="CENTER" relativeTo="UIParent" />
 		</Anchors>
@@ -184,19 +175,29 @@
 					<Anchor point="TOPRIGHT" x="-100" y="-50" />
 				</Anchors>
 			</CheckButton>
+			<CheckButton name="$parentReadyCheck" inherits="MarkBarConfigCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPRLEFT" x="24" y="-70" />
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentFlare" inherits="MarkBarConfigCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-100" y="-70" />
+				</Anchors>
+			</CheckButton>
 			<Slider name="$parentAlpha" inherits="MarkBarConfigSliderTemplate">
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-90" />
+					<Anchor point="TOP" x="0" y="-110" />
 				</Anchors>
 			</Slider>
 			<Slider name="$parentAlphaFade" inherits="MarkBarConfigSliderTemplate">
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-130" />
+					<Anchor point="TOP" x="0" y="-150" />
 				</Anchors>
 			</Slider>
 			<Slider name="$parentScale" inherits="MarkBarConfigSliderTemplate">
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-170" />
+					<Anchor point="TOP" x="0" y="-190" />
 				</Anchors>
 			</Slider>
 			<CheckButton name="$parentClose" inherits="MarkBarConfigButtonTemplate">

@@ -54,7 +54,7 @@
 		MarkBar_MARK_TARGET_NOT_IN_RAID = " is not in your party/raid.";
 		MarkBar_MARK_TARGET_NO_PLAYER = " is not a player.";
 
-	-- Tooltips ->
+	-- Tooltips -> -WIP-
 		MarkBar_TOOLTIP_SETTINGS = "Settings";
 		MarkBar_TOOLTIP_SETTINGS_HINT = "Leftclick: "..COLOR_WHITE.."Open Settings"..COLOR_END;
 
@@ -74,6 +74,23 @@
 		MarkBar_TOOLTIP_PMARK_DELETE_HINT = "Leftclick: "..COLOR_WHITE.."Delete all PermaMarks"..COLOR_END;
 		MarkBar_TOOLTIP_PMARK_PROFILE = "Profiles";
 		MarkBar_TOOLTIP_PMARK_PROFILE_HINT = "Not yet available!";
+		MarkBar_TOOLTIP_PMARK_NOT_SET = "No PermaMarks assigned";
+
+		MarkBar_TOOLTIP_READY = "Ready Check";
+		MarkBar_TOOLTIP_READY_HINT = "Leftclick: "..COLOR_WHITE.."Performs a ready check."..COLOR_END;
+
+		MarkBar_TOOLTIP_FLARE_BLUE = "Blue Flare";
+		MarkBar_TOOLTIP_FLARE_BLUE_HINT = "Leftclick: "..COLOR_WHITE.."Place the blue flare."..COLOR_END;
+		MarkBar_TOOLTIP_FLARE_GREEN = "Green Flare";
+		MarkBar_TOOLTIP_FLARE_GREEN_HINT = "Leftclick: "..COLOR_WHITE.."Place the green flare."..COLOR_END;
+		MarkBar_TOOLTIP_FLARE_PURPLE = "Purple Flare";
+		MarkBar_TOOLTIP_FLARE_PURPLE_HINT = "Leftclick: "..COLOR_WHITE.."Place the purple flare."..COLOR_END;
+		MarkBar_TOOLTIP_FLARE_RED = "Red Flare";
+		MarkBar_TOOLTIP_FLARE_RED_HINT = "Leftclick: "..COLOR_WHITE.."Place the red flare."..COLOR_END;
+		MarkBar_TOOLTIP_FLARE_WHITE = "White Flare";
+		MarkBar_TOOLTIP_FLARE_WHITE_HINT = "Leftclick: "..COLOR_WHITE.."Place the white flare."..COLOR_END;
+		MarkBar_TOOLTIP_FLARE_DELETE = "Remove Flares";
+		MarkBar_TOOLTIP_FLARE_DELETE_HINT = "Leftclick: "..COLOR_WHITE.."Remove all flares."..COLOR_END;
 
 	-- RaidTargets ->
 		MarkBar_RT = {
