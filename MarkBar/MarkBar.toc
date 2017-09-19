@@ -1,7 +1,7 @@
 ## Interface: 40000
 ## Title: MarkBar
 ## Author: BrainInBlack
-## Version: 4.0.1 Alpha1
+## Version: 4.0.1a - Alpha2.3
 ## Notes: Toolbar to quickly assign raid targets and permanent mark of group members.
 ## Notes-deDE: Symbolleiste zum schnellen zuweisen von Raidzielen und permanenten markieren von Gruppenmitgliedern.
 ## SavedVariables: MarkBarSettings

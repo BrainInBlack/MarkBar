@@ -1,51 +1,109 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
 
 <!-- Templates Start -->
-	<Button name="ToolbarButtonTemplate" virtual="true" enableMouse="true">
-		<Size>
-			<AbsDimension x="26" y="26" />
-		</Size>
-		<Backdrop edgeFile="Interface\AddOns\MarkBar\tex\border.tga" tile="false">
-			<EdgeSize>
-				<AbsValue val="10" />
-			</EdgeSize>
-		</Backdrop>
-		<Scripts>
-			<OnLoad>
-				MarkBar.MarkOnLoad(self);
-			</OnLoad>
-			<OnEvent>
-				MarkBar.OnEvent(self, event, ...);
-			</OnEvent>
-			<OnClick>
-				MarkBar.MarkOnClick(self, button);
-			</OnClick>
-			<OnEnter>
-				MarkBar.MarkMouseIn(self);
-			</OnEnter>
-			<OnLeave>
-				MarkBar.MarkMouseOut(self);
-			</OnLeave>
-		</Scripts>
-	</Button>
+
+	<!-- MarkButton Start -->
+		<CheckButton name="MarkBarButtonTemplate" virtual="true" enableMouse="true">
+			<Size x="26" y="26" />
+			<Backdrop bgFile="Interface\AddOns\MarkBar\tex\background.blp" edgeFile="Interface\AddOns\MarkBar\tex\border.tga" tile="false">
+				<EdgeSize val="10" />
+			</Backdrop>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture parentKey="icon">
+						<Size x="20" y="20" />
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					self:RegisterForClicks("LeftButtonUp","RightButtonUp");
+				</OnLoad>
+				<OnClick>
+					MarkBar.OnClick(self, button);
+				</OnClick>
+				<OnEnter>
+					MarkBar.OnEnter(self);
+				</OnEnter>
+				<OnLeave>
+					MarkBar.OnLeave(self);
+				</OnLeave>
+			</Scripts>
+		</CheckButton>
+	<!-- MarkButton End -->
+
+	<!-- MiniButtons Start -->
+		<CheckButton name="MarkBarMiniButtonTemplate" virtual="true" enableMouse="true">
+			<Size x="12" y="12" />
+			<Backdrop bgFile="Interface\AddOns\MarkBar\tex\background.tga" edgeFile="Interface\AddOns\MarkBar\tex\border.tga" tile="false">
+				<EdgeSize val="6" />
+			</Backdrop>
+			<Layers>
+				<Layer level="ARTWORK">
+					<Texture parentKey="icon" alpha="0.55">
+						<Size x="8" y="8" />
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+					</Texture>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					self:RegisterForClicks("LeftButtonUp");
+				</OnLoad>
+				<OnEnter>
+					MarkBar.OnEnter(self);
+				</OnEnter>
+				<OnLeave>
+					MarkBar.OnLeave(self);
+				</OnLeave>
+			</Scripts>
+		</CheckButton>
+	<!-- MiniButtons End -->
+	
+	<!-- PermaMarkButtons Start -->
+		<CheckButton name="MarkBarPermaControlButtonTemplate" virtual="true" enableMouse="true">
+			<Size x="33" y="12" />
+			<Backdrop bgFile="Interface\AddOns\MarkBar\tex\background.blp" edgeFile="Interface\AddOns\MarkBar\tex\border.tga" tile="false">
+				<EdgeSize val="6" />
+			</Backdrop>
+			<Layers>
+				<Layer level="OVERLAY">
+					<FontString parentKey="text" font="Interface\AddOns\MarkBar\tex\font.ttf">
+						<FontHeight val="10"/>
+						<Color r="0.6" g="0.6" b="0.6" />
+						<Size x="33" y="12" />
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="-0.5" />
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnEnter>
+					MarkBar.OnEnter(self);
+				</OnEnter>
+				<OnLeave>
+					MarkBar.OnLeave(self);
+				</OnLeave>
+			</Scripts>
+		</CheckButton>
+	<!-- PermaMarkButtons End -->
+
 <!-- Templates End -->
 
 <!-- Toolbar Start -->
-	<Frame name="MarkBarToolbar" parent="UIParent" frameStrata="HIGH" enableMouse="true" movable="true" hidden="false" clampedToScreen="true">
-		<Size>
-			<AbsDimension x="284" y="34" />
-		</Size>
+	<Frame name="MarkBarToolbar" parent="UIParent" frameStrata="HIGH" enableMouse="true" movable="true" hidden="true" clampedToScreen="true">
+		<Size  x="306" y="34" />
 		<Anchors>
-			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="BOTTOMLEFT">
-				<Offset>
-					<AbsDimension x="20" y="350" />
-				</Offset>
-			</Anchor>
+			<Anchor point="CENTER" relativeTo="UIParent" x="0" y="0" />
 		</Anchors>
-		<Backdrop bgFile="Interface\AddOns\MarkBar\tex\background.tga" edgeFile="Interface\AddOns\MarkBar\tex\border.tga" tile="false">
-			<EdgeSize>
-				<AbsValue val="12" />
-			</EdgeSize>
+		<Backdrop bgFile="Interface\AddOns\MarkBar\tex\background.blp" edgeFile="Interface\AddOns\MarkBar\tex\border.tga" tile="false">
+			<EdgeSize val="12" />
 		</Backdrop>
 		<Scripts>
 			<OnLoad>
@@ -66,56 +124,28 @@
 				end
 			</OnUpdate>
 			<OnEnter>
-				MarkBar.ToolbarMouseIn(self);
+				MarkBar.OnEnter(self);
 			</OnEnter>
 			<OnLeave>
-				MarkBar.ToolbarMouseOut(self);
+				MarkBar.OnLeave(self);
 			</OnLeave>
 		</Scripts>
 		<Frames>
-			<Button name="MarkBarMarkM1" inherits="ToolbarButtonTemplate" id="1">
+
+		<!-- MarkButtons Start -->
+			<CheckButton name="MarkBarMarkM1" inherits="MarkBarButtonTemplate" id="1">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="186" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="186" y="-4" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\AddOns\MarkBar\tex\1.tga">
-							<Size>
-								<AbsDimension x="20" y="20" />
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
-			<Button name="MarkBarMarkM2" inherits="ToolbarButtonTemplate" id="2">
+			</CheckButton>
+
+			<CheckButton name="MarkBarMarkM2" inherits="MarkBarButtonTemplate" id="2">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="160" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="160" y="-4" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\AddOns\MarkBar\tex\2.tga">
-							<Size>
-								<AbsDimension x="20" y="20" />
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
-			<Button name="MarkBarMarkM3" inherits="ToolbarButtonTemplate" id="3">
+			</CheckButton>
+
+			<CheckButton name="MarkBarMarkM3" inherits="MarkBarButtonTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset>
@@ -123,294 +153,123 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\AddOns\MarkBar\tex\3.tga">
-							<Size>
-								<AbsDimension x="20" y="20" />
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
-			<Button name="MarkBarMarkM4" inherits="ToolbarButtonTemplate" id="4">
+			</CheckButton>
+
+			<CheckButton name="MarkBarMarkM4" inherits="MarkBarButtonTemplate" id="4">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="108" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="108" y="-4" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\AddOns\MarkBar\tex\4.tga">
-							<Size>
-								<AbsDimension x="20" y="20" />
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
-			<Button name="MarkBarMarkM5" inherits="ToolbarButtonTemplate" id="5">
+			</CheckButton>
+
+			<CheckButton name="MarkBarMarkM5" inherits="MarkBarButtonTemplate" id="5">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="82" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="82" y="-4" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\AddOns\MarkBar\tex\5.tga">
-							<Size>
-								<AbsDimension x="20" y="20" />
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
-			<Button name="MarkBarMarkM6" inherits="ToolbarButtonTemplate" id="6">
+			</CheckButton>
+
+			<CheckButton name="MarkBarMarkM6" inherits="MarkBarButtonTemplate" id="6">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="56" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="56" y="-4" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\AddOns\MarkBar\tex\6.tga">
-							<Size>
-								<AbsDimension x="20" y="20" />
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
-			<Button name="MarkBarMarkM7" inherits="ToolbarButtonTemplate" id="7">
+			</CheckButton>
+
+			<CheckButton name="MarkBarMarkM7" inherits="MarkBarButtonTemplate" id="7">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="30" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="30" y="-4" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\AddOns\MarkBar\tex\7.tga">
-							<Size>
-								<AbsDimension x="20" y="20" />
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
-			<Button name="MarkBarMarkM8" inherits="ToolbarButtonTemplate" id="8">
+			</CheckButton>
+
+			<CheckButton name="MarkBarMarkM8" inherits="MarkBarButtonTemplate" id="8">
 				<Anchors>
-					<Anchor point="TOPLEFT">
-						<Offset>
-							<AbsDimension x="4" y="-4"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPLEFT" x="4" y="-4" />
 				</Anchors>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture file="Interface\AddOns\MarkBar\tex\8.tga">
-							<Size>
-								<AbsDimension x="20" y="20" />
-							</Size>
-							<Anchors>
-								<Anchor point="CENTER" />
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Button>
-			<Button name="MarkBarClose">
-				<Size>
-					<AbsDimension x="10" y="10" />
-				</Size>
-				<Backdrop bgFile="Interface\AddOns\MarkBar\tex\close.tga" tile="false" />
+			</CheckButton>
+		<!-- MarkButtons End -->
+
+		<!-- MiniButtons Start -->
+			<CheckButton name="MarkBarMiniButtonClose" inherits="MarkBarMiniButtonTemplate">
 				<Anchors>
-					<Anchor point="TOPRIGHT">
-						<Offset>
-							<AbsDimension x="-6" y="-5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-4" y="-4" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MarkBar.ToggleToolbar();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<CheckButton name="MarkBarMiniButtonSettings" inherits="MarkBarMiniButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"  x="-4" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						MarkBar.ToggleSettings();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		<!-- MiniButtons End -->
+
+		<!-- OtherButtons Start -->
+			<CheckButton name="MarkBarPermaControlRun" inherits="MarkBarPermaControlButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"  x="-57" y="4" />
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:SetAlpha(.55);
-						self:SetBackdropColor(.5, .5, .5);
+						self.text:SetText(MarkBar_TOOLTIP_PMARK_START);
 					</OnLoad>
 					<OnClick>
-						MarkBar.ToolbarToggle();
+						MarkBar.TogglePermaMarks();
 					</OnClick>
-					<OnEnter>
-						self:SetAlpha(1);
-						if(MarkBarSettings.ToolbarTooltip) then
-							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-							GameTooltip:SetText(MarkBar_TIP_CLOSE);
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave>
-						self:SetAlpha(.55);
-						GameTooltip:Hide();
-					</OnLeave>
 				</Scripts>
-			</Button>
-			<Button name="MarkBarSettings">
-				<Size>
-					<AbsDimension x="10" y="10" />
-				</Size>
-				<Backdrop bgFile="Interface\AddOns\MarkBar\tex\settings.tga" tile="false" />
+			</CheckButton>
+
+			<CheckButton name="MarkBarPermaControlDelete" inherits="MarkBarPermaControlButtonTemplate">
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-6" y="5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="4" />
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						self:SetAlpha(.55);
-						self:SetBackdropColor(.5, .5, .5);
-					</OnLoad>
-					<OnClick>
-						MarkBar.SettingsToggle();
-					</OnClick>
-					<OnEnter>
-						self:SetAlpha(1);
-						if(MarkBarSettings.ToolbarTooltip) then
-							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-							GameTooltip:SetText(MarkBar_TIP_SETTINGS);
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave>
-						self:SetAlpha(.55);
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Button>
-			<Button name="MarkBarReset">
-				<Size>
-					<AbsDimension x="24" y="24" />
-				</Size>
-				<Backdrop bgFile="Interface\AddOns\MarkBar\tex\reset.tga" tile="false" />
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-19" y="5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetAlpha(.55);
-						self:SetBackdropColor(.5, .5, .5);
+						self.text:SetText(MarkBar_TOOLTIP_PMARK_DELETE);
 					</OnLoad>
 					<OnClick>
 						MarkBar.ResetPermaMark();
 					</OnClick>
-					<OnEnter>
-						self:SetAlpha(1);
-						if(MarkBarSettings.ToolbarTooltip) then
-							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-							GameTooltip:SetText(MarkBar_TIP_RESET_PERMA_MARK);
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave>
-						self:SetAlpha(.55);
-						GameTooltip:Hide();
-					</OnLeave>
 				</Scripts>
-			</Button>
-			<Button name="MarkBarStart" hidden="false">
-				<Size>
-					<AbsDimension x="24" y="24" />
-				</Size>
-				<Backdrop bgFile="Interface\AddOns\MarkBar\tex\start.tga" tile="false" /> <!-- Texture -->
+			</CheckButton>
+
+			<CheckButton name="MarkBarPermaProfile">
+				<Size x="70" y="12" />
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-45" y="5"/>
-						</Offset>
-					</Anchor>
+					<Anchor point="TOPRIGHT" x="-20" y="-4" />
 				</Anchors>
+				<Backdrop bgFile="Interface\AddOns\MarkBar\tex\background.blp" edgeFile="Interface\AddOns\MarkBar\tex\border.tga" tile="false">
+					<EdgeSize val="6" />
+				</Backdrop>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString font="Interface\AddOns\MarkBar\tex\font.ttf" text="Default">
+							<FontHeight val="10" />
+							<Color r="0.6" g="0.6" b="0.6" />
+							<Size x="70" y="12" />
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-0.5" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 				<Scripts>
-					<OnLoad>
-						self:SetAlpha(.55);
-						self:SetBackdropColor(.5, .5, .5);
-					</OnLoad>
-					<OnClick>
-						MarkBar.PermaToggle();
-					</OnClick>
 					<OnEnter>
-						self:SetAlpha(1);
-						if(MarkBarSettings.ToolbarTooltip) then
-							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-							GameTooltip:SetText(MarkBar_TIP_START_PERMA_MARK);
-							GameTooltip:Show();
-						end
+						MarkBar.OnEnter(self);
 					</OnEnter>
 					<OnLeave>
-						self:SetAlpha(.55);
-						GameTooltip:Hide();
+						MarkBar.OnLeave(self);
 					</OnLeave>
 				</Scripts>
-			</Button>
-			<Button name="MarkBarStop" hidden="true">
-				<Size>
-					<AbsDimension x="24" y="24" />
-				</Size>
-				<Backdrop bgFile="Interface\AddOns\MarkBar\tex\stop.tga" tile="false" /> <!-- Texture -->
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT">
-						<Offset>
-							<AbsDimension x="-45" y="5"/>
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetAlpha(.55);
-						self:SetBackdropColor(.5, .5, .5);
-					</OnLoad>
-					<OnClick>
-						MarkBar.PermaToggle();
-					</OnClick>
-					<OnEnter>
-						self:SetAlpha(1);
-						if(MarkBarSettings.ToolbarTooltip) then
-							GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-							GameTooltip:SetText(MarkBar_TIP_STOP_PERMA_MARK);
-							GameTooltip:Show();
-						end
-					</OnEnter>
-					<OnLeave>
-						self:SetAlpha(.55);
-						GameTooltip:Hide();
-					</OnLeave>
-				</Scripts>
-			</Button>
+			</CheckButton>
+		<!-- OtherButtons End -->
+
 		</Frames>
 	</Frame>
 <!-- Toolbar End -->

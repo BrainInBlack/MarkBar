@@ -1,0 +1,219 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+
+<!-- Templates Start -->
+
+	<!-- CheckboxTemplate Start -->
+		<CheckButton name="MarkBarConfigCheckboxTemplate" enableMouse="true" virtual="true">
+			<Size x="14" y="14" />
+			<HitRectInsets>
+				<AbsInset left="0" right="-90" top="0" bottom="0"/>
+			</HitRectInsets>
+			<Layers>
+				<Layer level="OVERLAY">
+					<FontString parentKey="text" font="Interface\AddOns\MarkBar\tex\font.ttf" inherits="MarkBarFontShadow" justifyH="LEFT">
+						<FontHeight val="10"/>
+						<Size  x="90" y="10" />
+						<Anchors>
+							<Anchor point="LEFT" x="20" y="0" />
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					self:RegisterForClicks("LeftButtonUp");
+				</OnLoad>
+				<OnEnter>
+					MarkBarConfig.Tooltip(self);
+					GameTooltip:Show();
+				</OnEnter>
+				<OnLeave>
+					GameTooltip:Hide();
+				</OnLeave>
+				<OnClick>
+					MarkBarConfig.OnClick(self, button);
+				</OnClick>
+			</Scripts>
+			<NormalTexture file="Interface\AddOns\MarkBarConfig\tex\checkbox_unchecked.blp" />
+			<CheckedTexture file="Interface\AddOns\MarkBarConfig\tex\checkbox_checked.blp" />
+			<HighlightTexture file="Interface\AddOns\MarkBarConfig\tex\checkbox_highlight.blp" alphaMode="ADD" />
+		</CheckButton>
+	<!-- CheckboxTemplate End -->
+
+	<!-- SliderTemplate Start -->
+		<Slider name="MarkBarConfigSliderTemplate" orientation="HORIZONTAL"  enableMouse="true" virtual="true">
+			<Size x="200" y="10" />
+			<HitRectInsets>
+				<AbsInset left="0" right="0" top="-10" bottom="-10"/>
+			</HitRectInsets>
+			<Backdrop bgFile="Interface\AddOns\MarkBarConfig\tex\slider_bg.blp" tile="false" />
+			<Layers>
+				<Layer level="OVERLAY">
+					<FontString parentKey="option" font="Interface\AddOns\MarkBar\tex\font.ttf" inherits="MarkBarFontShadow">
+						<FontHeight val="10"/>
+						<Size  x="200" y="10" />
+						<Anchors>
+							<Anchor point="CENTER" x="0" y="14" />
+						</Anchors>
+					</FontString>
+					<FontString parentKey="min" font="Interface\AddOns\MarkBar\tex\font.ttf" inherits="MarkBarFontShadow" justifyH="LEFT">
+						<FontHeight val="9"/>
+						<Size  x="80" y="10" />
+						<Anchors>
+							<Anchor point="LEFT" x="2" y="-12" />
+						</Anchors>
+					</FontString>
+					<FontString parentKey="max" font="Interface\AddOns\MarkBar\tex\font.ttf" inherits="MarkBarFontShadow" justifyH="RIGHT">
+						<FontHeight val="9"/>
+						<Size  x="80" y="10" />
+						<Anchors>
+							<Anchor point="RIGHT" x="-2" y="-12" />
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnEnter>
+					MarkBarConfig.Tooltip(self);
+					GameTooltip:Show();
+				</OnEnter>
+				<OnLeave>
+					GameTooltip:Hide();
+				</OnLeave>
+				<OnValueChanged>
+					MarkBarConfig.OnChange(self);
+				</OnValueChanged>
+			</Scripts>
+			<ThumbTexture name="$parentThumb" file="Interface\AddOns\MarkBarConfig\tex\slider.blp">
+				<Size  x="16" y="16"/>
+			</ThumbTexture>
+		</Slider>
+	<!-- SliderTemplate End -->
+
+	<!-- ButtonTemplate Start -->
+		<CheckButton name="MarkBarConfigButtonTemplate" enableMouse="true" virtual="true">
+			<Size x="64" y="16" />
+			<Layers>
+				<Layer level="OVERLAY">
+					<FontString parentKey="text" font="Interface\AddOns\MarkBar\tex\font.ttf" inherits="MarkBarFontShadow">
+						<FontHeight val="10" />
+						<Size x="128" y="32" />
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+					</FontString>
+				</Layer>
+			</Layers>
+			<Scripts>
+				<OnLoad>
+					self:RegisterForClicks("LeftButtonUp");
+				</OnLoad>
+			</Scripts>
+			<NormalTexture file="Interface\AddOns\MarkBarConfig\tex\option_button.blp" />
+			<HighlightTexture file="Interface\AddOns\MarkBarConfig\tex\option_button_highlight.blp" alphaMode="ADD" />
+		</CheckButton>
+	<!-- ButtonTemplate End -->
+
+	<!-- FontStuff Start -->
+		<FontString name="MarkBarFontShadow" virtual="true">
+			<Shadow>
+				<Offset x="1.5" y="-1.5" />
+				<Color r="0" g="0" b="0" />
+			</Shadow>
+		</FontString>
+	<!-- FontStuff End -->
+
+<!-- Templates End -->
+
+<!-- MainFrame Start -->
+	<Frame name="MarkBarConfig" frameStrata="DIALOG" enableMouse="true" movable="true" hidden="true" clampedToScreen="true">
+		<Size x="240" y="210" />
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" />
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\AddOns\MarkBar\tex\border.tga" tile="false">
+			<EdgeSize val="12" />
+		</Backdrop>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="title" font="Interface\AddOns\MarkBar\tex\font.ttf" inherits="MarkBarFontShadow">
+					<FontHeight val="12"/>
+					<Size x="200" y="18" />
+					<Anchors>
+						<Anchor point="TOP" x="0" y="8" />
+					</Anchors>
+				</FontString>
+				<FontString parentKey="version" font="Interface\AddOns\MarkBar\tex\font.ttf" inherits="MarkBarFontShadow">
+					<FontHeight val="8"/>
+					<Size x="200" y="20" />
+					<Anchors>
+						<Anchor point="TOP" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnShow>
+				MarkBarConfig.OnShow();
+			</OnShow>
+			<OnMouseDown>
+				MarkBar.MoveOnDown(self, button);
+			</OnMouseDown>
+			<OnMouseUp>
+				MarkBar.MoveOnUp(self, button);
+			</OnMouseUp>
+		</Scripts>
+		<Frames>
+			<CheckButton name="$parentLock" inherits="MarkBarConfigCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPRLEFT" x="24" y="-30" />
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentAutoshow" inherits="MarkBarConfigCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="24" y="-50" />
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentTooltips" inherits="MarkBarConfigCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-100" y="-30" />
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentFade" inherits="MarkBarConfigCheckboxTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-100" y="-50" />
+				</Anchors>
+			</CheckButton>
+			<Slider name="$parentAlpha" inherits="MarkBarConfigSliderTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-90" />
+				</Anchors>
+			</Slider>
+			<Slider name="$parentAlphaFade" inherits="MarkBarConfigSliderTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-130" />
+				</Anchors>
+			</Slider>
+			<Slider name="$parentScale" inherits="MarkBarConfigSliderTemplate">
+				<Anchors>
+					<Anchor point="TOP" x="0" y="-170" />
+				</Anchors>
+			</Slider>
+			<CheckButton name="$parentClose" inherits="MarkBarConfigButtonTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="-6" />
+				</Anchors>
+				<Scripts>
+					<OnShow>
+						self.text:SetText(MarkBar_SETTINGS_CLOSE);
+					</OnShow>
+					<OnClick>
+						MarkBarConfig:Hide();
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+	</Frame>
+<!-- MainFrame End -->
+
+</Ui>

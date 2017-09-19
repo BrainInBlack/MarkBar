@@ -1,24 +1,28 @@
--- Globals ->
-MarkBar = {}
-MarkBar.title = "MarkBar";
-MarkBar.author = "BrainInBlack";
-MarkBar.version = "4.0.1 Alpha1";
-MarkBar.vid = "1";
+-- GlobalsVars ->
+	MarkBar = {}
+	MarkBar.title = "MarkBar";
+	MarkBar.author = "BrainInBlack";
+	MarkBar.version = "4.0.1a - Alpha2.3";
+	MarkBar.vid = "1";
+
 
 -- OnLoad ->
 	function MarkBar.OnLoad(self)
 
-		-- Registerevents ->
-		self:RegisterEvent("VARIABLES_LOADED");
+	-- ToolbarEvents ->
+		self:RegisterEvent("ADDON_LOADED");
 		self:RegisterEvent("PARTY_MEMBERS_CHANGED");
 		self:RegisterEvent("PARTY_LEADER_CHANGED");
 
 		-- TempVars ->
 		MarkBar.LastUpdate = 0;
-		MarkBar.GroupMode = false;
+		MarkBar.InRaid = false;
+		MarkBar.InParty = false
+		MarkBar.Solo = false;
 		MarkBar.ClosedByUser = false;
 		MarkBar.PermaMarks = nil;
 		MarkBar.PermaMarksRun = false;
+		MarkBar.ConfigLoaded = false;
 
 		-- SlashCommands ->
 		SLASH_MARKBAR1 = "/markbar";
@@ -29,71 +33,135 @@ MarkBar.vid = "1";
 
 	end
 
--- OnVariablesLoaded ->
-	function MarkBar.OnVariablesLoaded(self)
-		local frame = self:GetName();
 
-		-- Settings ->
-		if(not MarkBarSettings) then
-			MarkBar.Print(MarkBar_FIRST_RUN);
-			MarkBarSettings = {}
-			MarkBarSettings.vid = "1";
-			MarkBarSettings.ToolbarAutoShow = false;
-			MarkBarSettings.ToolbarFade = false;
-			MarkBarSettings.ToolbarLock = false;
-			MarkBarSettings.ToolbarTooltip = true;
-			MarkBarSettings.ToolbarScale = 1;
-			MarkBarSettings.ToolbarAlpha = .95;
-			MarkBarSettings.ToolbarAlphaFade = .55;
-			MarkBarSettings.ToolbarBackground = {r = .1, g = .1, b = .1}
-			MarkBarSettings.ToolbarBorder = {r = .3, g = .3, b = .3}
-			MarkBarSettings.MarkAlpha = 1;
-			MarkBarSettings.MarkAlphaFade = .55;
-			MarkBarSettings.MarkBorder = {r = .3, g = .3, b = .3}
-			MarkBarSettings.PermaMarkBorder = {r = .1, g = .5, b = .1}
-		elseif(MarkBar.vid ~= MarkBarSettings.vid) then
-			-- AddChanges NYI
+-- OnEvent ->
+	function MarkBar.OnEvent(self, event, ...)
+		local arg1 = ...;
+
+		-- PartyChanged ->
+		if(event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED") then
+			MarkBar.PartyChanged(self);
+			return;
 		end
 
-		-- DefaultOptions ->
-		MarkBarSettings = {}
-		MarkBarSettings.vid = "1";
-		MarkBarSettings.ToolbarAutoShow = false;
-		MarkBarSettings.ToolbarFade = false;
-		MarkBarSettings.ToolbarLock = false;
-		MarkBarSettings.ToolbarTooltip = true;
-		MarkBarSettings.ToolbarScale = 1;
-		MarkBarSettings.ToolbarAlpha = .95;
-		MarkBarSettings.ToolbarAlphaFade = .55;
-		MarkBarSettings.ToolbarBackground = {r = .1, g = .1, b = .1}
-		MarkBarSettings.ToolbarBorder = {r = .3, g = .3, b = .3}
-		MarkBarSettings.MarkAlpha = 1;
-		MarkBarSettings.MarkAlphaFade = .55;
-		MarkBarSettings.MarkBorder = {r = .3, g = .3, b = .3}
-		MarkBarSettings.PermaMarkBorder = {r = .1, g = .5, b = .1}
-
-		-- FrameSettings ->
-		if(frame == "MarkBarToolbar") then
-			self:SetBackdropColor(MarkBarSettings.ToolbarBackground["r"],
-								  MarkBarSettings.ToolbarBackground["g"],
-								  MarkBarSettings.ToolbarBackground["b"]);
-			self:SetBackdropBorderColor(MarkBarSettings.ToolbarBorder["r"],
-										MarkBarSettings.ToolbarBorder["g"],
-										MarkBarSettings.ToolbarBorder["b"]);
-			self:SetScale(MarkBarSettings.ToolbarScale);
-			if(MarkBarSettings.ToolbarFade) then
-				self:SetAlpha(MarkBarSettings.ToolbarAlphaFade);
-			else
-				self:SetAlpha(MarkBarSettings.ToolbarAlpha);
-			end
-		else
-			self:SetBackdropBorderColor(MarkBarSettings.MarkBorder["r"],
-										MarkBarSettings.MarkBorder["g"],
-										MarkBarSettings.MarkBorder["b"]);
-			self:SetAlpha(MarkBarSettings.MarkAlphaFade);
+		-- AddonLoaded ->
+		if(event == "ADDON_LOADED" and arg1 == "MarkBar") then
+			MarkBar.AddonLoaded();
+			return;
 		end
 
 	end
+
+	-- AddonLoaded ->
+		function MarkBar.AddonLoaded()
+			-- WelcomeMessage ->
+			MarkBar.Print(MarkBar_GENERAL_WELCOME_PART1..COLOR_ORANGE.." v"..MarkBar.version..COLOR_END..MarkBar_GENERAL_WELCOME_PART2..COLOR_CLASS["DEATHKNIGHT"]..MarkBar.author..COLOR_END);
+
+			-- Settings ->
+			if(not MarkBarSettings) then
+				MarkBar.Print(MarkBar_GENERAL_FIRST_RUN);
+				MarkBarSettings = {}
+				MarkBarSettings.vid = "1";
+				MarkBarSettings.ToolbarAutoShow = true;
+				MarkBarSettings.ToolbarFade = false;
+				MarkBarSettings.ToolbarLock = false;
+				MarkBarSettings.ToolbarTooltip = true;
+				MarkBarSettings.ToolbarScale = 1.15;
+				MarkBarSettings.ToolbarAlpha = .95;
+				MarkBarSettings.ToolbarAlphaFade = .55;
+				MarkBarSettings.ToolbarBackground = {r = .1, g = .1, b = .1}
+				MarkBarSettings.ToolbarBorder = {r = .3, g = .3, b = .3}
+				MarkBarSettings.MarkAlpha = .95;
+				MarkBarSettings.MarkAlphaFade = .55;
+				MarkBarSettings.MarkBorder = {r = .3, g = .3, b = .3}
+				MarkBarSettings.PermaMarkBorder = {r = .1, g = .5, b = .1}
+			elseif(MarkBar.vid ~= MarkBarSettings.vid) then
+				-- AddChanges NYI
+			end
+
+			-- ToolbarScale ->
+			MarkBarToolbar:SetScale(MarkBarSettings.ToolbarScale);
+
+			-- ToolbarAlpha ->
+			if(MarkBarSettings.ToolbarFade) then
+				MarkBarToolbar:SetAlpha(MarkBarSettings.ToolbarAlphaFade);
+			else
+				MarkBarToolbar:SetAlpha(MarkBarSettings.ToolbarAlpha);
+			end
+
+			-- ToolbarColors ->
+			MarkBarToolbar:SetBackdropColor(MarkBarSettings.ToolbarBackground.r, MarkBarSettings.ToolbarBackground.g, MarkBarSettings.ToolbarBackground.b);
+			MarkBarToolbar:SetBackdropBorderColor(MarkBarSettings.ToolbarBorder.r, MarkBarSettings.ToolbarBorder.g, MarkBarSettings.ToolbarBorder.b);
+
+			-- MarkButtonsSetup ->
+			local markbuttons = {MarkBarMarkM1, MarkBarMarkM2, MarkBarMarkM3, MarkBarMarkM4, MarkBarMarkM5, MarkBarMarkM6, MarkBarMarkM7, MarkBarMarkM8}
+			for i, v in pairs(markbuttons) do
+				v:SetBackdropColor(MarkBarSettings.ToolbarBackground.r, MarkBarSettings.ToolbarBackground.g, MarkBarSettings.ToolbarBackground.b);
+				v:SetBackdropBorderColor(MarkBarSettings.MarkBorder.r, MarkBarSettings.MarkBorder.g, MarkBarSettings.MarkBorder.g);
+				v.icon:SetTexture("Interface\\AddOns\\MarkBar\\tex\\"..i..".blp");
+				v:SetAlpha(MarkBarSettings.MarkAlphaFade);
+			end
+
+			-- MiniButtonSetup ->
+			local minibuttons = {close = MarkBarMiniButtonClose, settings = MarkBarMiniButtonSettings}
+			for i, v in pairs(minibuttons) do
+				v:SetBackdropColor(MarkBarSettings.ToolbarBackground.r, MarkBarSettings.ToolbarBackground.g, MarkBarSettings.ToolbarBackground.b);
+				v:SetBackdropBorderColor(MarkBarSettings.MarkBorder.r, MarkBarSettings.MarkBorder.g, MarkBarSettings.MarkBorder.g);
+				v.icon:SetTexture("Interface\\AddOns\\MarkBar\\tex\\"..i..".blp");
+				v:SetAlpha(MarkBarSettings.MarkAlphaFade);
+			end
+
+			-- PermaControlButtonSetup ->
+			local permabuttons = {MarkBarPermaControlDelete, MarkBarPermaControlRun, MarkBarPermaProfile}
+			for i, v in pairs(permabuttons) do
+				v:SetBackdropColor(MarkBarSettings.ToolbarBackground.r, MarkBarSettings.ToolbarBackground.g, MarkBarSettings.ToolbarBackground.b);
+				v:SetBackdropBorderColor(MarkBarSettings.MarkBorder.r, MarkBarSettings.MarkBorder.g, MarkBarSettings.MarkBorder.g);
+				v:SetAlpha(MarkBarSettings.MarkAlphaFade);
+			end
+
+			-- UnregisterEvent ->
+			MarkBarToolbar:UnregisterEvent("ADDON_LOADED");
+		end
+
+	-- PartyMemberChanged ->
+	function MarkBar.PartyChanged(self)
+
+		-- InRaid ->
+		if(UnitInRaid("player") and (IsRaidLeader("player") or IsRaidOfficer("player")) and not UnitInBattleground("player")) then
+			MarkBar.InRaid = true;
+			MarkBar.InGroup = false;
+			MarkBar.Solo = false;
+			if(MarkBarSettings.ToolbarAutoShow) then
+				self:Show();
+			end
+			return;
+		end
+
+		-- InParty ->
+		if(GetRealNumPartyMembers() >= 1 and not UnitInRaid("player")) then
+			MarkBar.InRaid = false;
+			MarkBar.InParty = true;
+			MarkBar.Solo = false;
+			if(MarkBarSettings.ToolbarAutoShow) then
+				self:Show();
+			end
+			return;
+		end
+
+		-- Solo ->
+		MarkBar.InRaid = false;
+		MarkBar.InParty = false;
+		if(MarkBarSettings.ToolbarAutoShow) then
+			self:Hide();
+		end
+		if(UnitInRaid("player")) then
+			MarkBar.Solo = false;
+			return;
+		end
+		MarkBar.Solo = true;
+
+	end
+
 
 -- OnUpdate ->
 	function MarkBar.OnUpdate(elapsed)
@@ -104,42 +172,77 @@ MarkBar.vid = "1";
 		end
 	end
 
--- OnEvent ->
-	function MarkBar.OnEvent(self, event, ...)
+
+-- OnClick ->
+	function MarkBar.OnClick(self, button)
+		local id = self:GetID();
+
+		if(button == "LeftButton") then
+			MarkBar.SetMark(id);
+		elseif(button == "RightButton") then
+			MarkBar.SetPermaMark(self, id);
+		end
+	end
+
+
+-- OnEnter ->
+	function MarkBar.OnEnter(self)
 		local frame = self:GetName();
-		-- VariablesLoaded ->
-		if(event == "VARIABLES_LOADED") then
-			MarkBar.OnVariablesLoaded(self);
-			return;
+
+		-- Buttons ->
+		if(frame ~= "MarkBarToolbar") then
+			self:SetAlpha(MarkBarSettings.MarkAlpha);
+			if(MarkBarSettings.ToolbarTooltip) then
+				MarkBar.Tooltip(self);
+				GameTooltip:Show();
+			end
 		end
-		-- PartyMembersChanged ->
-		if(event == "PARTY_MEMBERS_CHANGED" or event == "PARTY_LEADER_CHANGED") then
-			MarkBar.PartyMembersChanged(self);
-			return;
+
+		-- ToolbarAlpha ->
+		if(MarkBarSettings.ToolbarFade) then
+			MarkBarToolbar:SetAlpha(MarkBarSettings.ToolbarAlpha);
 		end
+
 	end
 
--- PartyMemberChanged ->
-function MarkBar.PartyMembersChanged(self)
-	if((GetRealNumRaidMembers and (IsRaidLeader("player") or IsRaidOfficer("Player"))) or (GetRealNumPartyMembers())) then
-		MarkBar.GroupMode = true;
-		if(MarkBarSettings.ToolbarAutoShow and not self:IsVisible() and not MarkBar.ClosedByUser) then
-			self:Show();
+
+-- OnLeave ->
+	function MarkBar.OnLeave(self)
+		local frame = self:GetName();
+
+		-- MarkButtons ->
+		if(frame ~= "MarkBarToolbar") then
+			self:SetAlpha(MarkBarSettings.MarkAlphaFade);
+			if(MarkBarSettings.ToolbarTooltip) then
+				GameTooltip:Hide();
+			end
 		end
-	else
-		MarkBar.GroupMode = false;
-		if(MarkBarSettings.ToolbarAutoShow and self:IsVisible() and not MarkBar.ClosedByUser) then
-			self:Hide();
+
+		-- ToolbarAlpha ->
+		if(MarkBarSettings.ToolbarFade) then
+			MarkBarToolbar:SetAlpha(MarkBarSettings.ToolbarAlphaFade);
 		end
+
 	end
-end
 
 
--- MarkRuntime ->
+-- MarkHandler ->
+
+	-- SetMark ->
+	function MarkBar.SetMark(id)
+		if(MarkBar.InRaid or MarkBar.InParty) then
+			SetRaidTargetIcon("target", id);
+			return;
+		elseif(MarkBar.Solo) then
+			SetRaidTargetIcon("target", id);
+			return;
+		end
+		MarkBar.Print(MarkBar_MARK_NO_LEADER);
+	end
 
 	-- PermaMark ->
 	function MarkBar.PermaMark()
-		if(MarkBar.PermaMarks) then
+		if(MarkBar.PermaMarks and (MarkBar.InRaid or MarkBar.InParty)) then
 			for id, player in pairs(MarkBar.PermaMarks) do
 				if(GetRaidTargetIndex(player) ~= id) then
 					SetRaidTarget(player, id);
@@ -148,217 +251,239 @@ end
 		end
 	end
 
-	-- PermaToggle ->
-	function MarkBar.PermaToggle()
-		if(MarkBar.PermaMarks) then
-			if(MarkBar.PermaMarksRun) then
-				MarkBar.PermaMarksRun = false;
-				MarkBarStart:Show();
-				MarkBarStop:Hide();
-			else
-				MarkBar.PermaMarksRun = true;
-				MarkBarStart:Hide();
-				MarkBarStop:Show();
+	--SetPermaMark ->
+	function MarkBar.SetPermaMark(self, id)
+		if(MarkBar.InRaid or MarkBar.InParty) then
+			if(not MarkBar.Solo) then
+				if(UnitIsPlayer("target")) then
+					if(UnitInParty("target") or UnitInRaid("target")) then
+						if(not MarkBar.PermaMarks) then
+							MarkBar.PermaMarks = {
+									[id] = UnitName("target")
+								}
+						else
+							for mark, player in pairs(MarkBar.PermaMarks) do
+								if(mark == id) then
+									local playerClass, realClass = UnitClass(player);
+									MarkBar.Print(MarkBar_RT[mark]..MarkBar_MARK_ALREADY_SET_TO..COLOR_CLASS[realClass]..player..COLOR_END);
+									return;
+								elseif(player == UnitName("target")) then
+									local playerClass, realClass = UnitClass(player);
+									MarkBar.Print(COLOR_CLASS[realClass]..UnitName(player)..COLOR_END..MarkBar_MARK_PLAYER_ALREADY_SET_TO..MarkBar_RT[mark]);
+									return;
+								end
+							end
+							MarkBar.PermaMarks[id] = UnitName("target");
+						end
+						self:SetBackdropBorderColor(MarkBarSettings.PermaMarkBorder.r, MarkBarSettings.PermaMarkBorder.g, MarkBarSettings.PermaMarkBorder.b);
+						return;
+					end
+					local playerClass, realClass = UnitClass("target");
+					MarkBar.Print(COLOR_CLASS[realClass]..UnitName("target")..COLOR_END..MarkBar_MARK_TARGET_NOT_IN_RAID);
+					return;
+				end
+				MarkBar.Print(UnitName("target")..MarkBar_MARK_TARGET_NO_PLAYER);
+				return;
 			end
-		end
-	end
-
-	-- SetMark ->
-	function MarkBar.SetMark(id)
-		if(MarkBar.GroupMode) then
-			SetRaidTargetIcon("target", id);
-			return;
-		elseif(not GetRealNumRaidMembers() or not GetRealNumPartyMembers()) then
-			SetRaidTargetIcon("target", id);
+			MarkBar.Print(MarkBar_MARK_NO_LEADER);
 			return;
 		end
-		MarkBar.Print(COLOR_RED..MarkBar_MARK_NO_LEAD..COLOR_END);
+		MarkBar.Print(MarkBar_ERROR_NO_PARTY);
 	end
 
 	-- ResetPermaMark ->
 	function MarkBar.ResetPermaMark()
 		if(MarkBar.PermaMarks) then
 			for mark, player in pairs(MarkBar.PermaMarks) do
-				MarkBar.MarkResetBorder(mark);
+				MarkBar.ResetMarkBorder(mark);
+			end
+			if(MarkBar.PermaMarksRun) then
+				MarkBar.TogglePermaMarks();
 			end
 			MarkBar.PermaMarks = nil;
 		end
 	end
 
-	--SetPermaMark ->
-	function MarkBar.SetPermaMark(self, id)
-		if(MarkBar.GroupMode) then
-			if(UnitIsPlayer("target") and (UnitInParty("target") or UnitInRaid("target"))) then
-				if(not MarkBar.PermaMarks) then
-					MarkBar.PermaMarks = {
-							[id] = UnitName("target")
-						}
-				else
-					for mark, player in pairs(MarkBar.PermaMarks) do
-						if(mark == id) then
-							MarkBar.Print(MarkBar_RT[id]..COLOR_RED..MarkBar_MARK_ALLREADY_SET..COLOR_END);
-							return;
-						elseif(player == UnitName("target")) then
-							MarkBar.Print(COLOR_RED..MarkBar_MARK_PLAYER_ALLREADY_SET..MarkBar_RT[mark]..COLOR_END);
-							return;
-						end
-					end
-					MarkBar.PermaMarks[id] = UnitName("target");
-				end
-				self:SetBackdropBorderColor(MarkBarSettings.PermaMarkBorder["r"],
-											MarkBarSettings.PermaMarkBorder["g"],
-											MarkBarSettings.PermaMarkBorder["b"]);
-				return;
-			end
-			MarkBar.Print(COLOR_RED..MarkBar_MARK_NO_PLAYER..COLOR_END);
-		end
-		MarkBar.Print(COLOR_RED..MarkBar_MARK_NO_PARTY..COLOR_END);
+	-- MarkResetBorder ->
+	function MarkBar.ResetMarkBorder(mark)
+		local alias = {MarkBarMarkM1, MarkBarMarkM2, MarkBarMarkM3, MarkBarMarkM4, MarkBarMarkM5, MarkBarMarkM6, MarkBarMarkM7, MarkBarMarkM8}
+		alias[mark]:SetBackdropBorderColor(MarkBarSettings.MarkBorder.r, MarkBarSettings.MarkBorder.g, MarkBarSettings.MarkBorder.b);
 	end
 
 
--- MainFrame ->
+-- Toggle ->
 
-	-- Toggle ->
-	function MarkBar.ToolbarToggle()
+	-- ToggleToolbar ->
+	function MarkBar.ToggleToolbar()
 		if(MarkBarToolbar:IsVisible()) then
-			MarkBarToolbar:Hide();
-			if(MarkBar.GroupMode) then
+			if(MarkBar.InRaid or MarkBar.InParty) then
 				MarkBar.ClosedByUser = true;
 			end
+			MarkBarToolbar:Hide();
 		else
-			MarkBarToolbar:Show();
 			MarkBar.ClosedByUser = false;
+			MarkBarToolbar:Show();
 		end
 	end
 
-	-- Lock ->
-	function MarkBar.ToolbarLock()
+	-- ToggleToolbarLock ->
+	function MarkBar.ToggleToolbarLock()
 		if(MarkBarSettings.ToolbarLock) then
 			MarkBarSettings.ToolbarLock = false;
-			MarkBar.Print(MarkBar_UNLOCKED);
+			MarkBar.Print(MarkBar_TOOLBAR_UNLOCKED);
 		else
 			MarkBarSettings.ToolbarLock = true;
-			MarkBar.Print(MarkBar_LOCKED);
+			MarkBar.Print(MarkBar_TOOLBAR_LOCKED);
 		end
 	end
+
+	-- ToggleAutoShow ->
+	function MarkBar.ToggleAutoShow(self)
+		if(MarkBarSettings.ToolbarAutoShow and not MarkBar.ClosedByUser) then
+			if((MarkBar.InRaid or MarkBar.InParty) and not self:IsVisible()) then
+				self:Show();
+				return;
+			elseif(self:IsVisible()) then
+				self:Hide();
+				return;
+			end
+		end
+	end
+
+	-- TogglePermaMarks ->
+	function MarkBar.TogglePermaMarks()
+		if(MarkBar.PermaMarks) then
+			if(MarkBar.PermaMarksRun) then
+				MarkBar.PermaMarksRun = false;
+				MarkBarPermaControlRun.text:SetText(MarkBar_TOOLTIP_PMARK_START);
+			else
+				MarkBar.PermaMarksRun = true;
+				MarkBarPermaControlRun.text:SetText(MarkBar_TOOLTIP_PMARK_STOP);
+			end
+		end
+	end
+
+	-- ToggleSettings ->
+	function MarkBar.ToggleSettings()
+		if(not IsAddOnLoaded("MarkBarConfig") and not LoadAddOn("MarkBarConfig")) then
+			MarkBar.Print(MarkBar_ERROR_CONFIG_LOAD);
+			return;
+		end
+		if(MarkBar.ConfigLoaded) then
+			if(MarkBarConfig:IsVisible()) then
+				MarkBarConfig:Hide();
+			else
+				MarkBarConfig:Show();
+			end
+		else
+			MarkBar.Print(MarkBar_ERROR_CONFIG_LOAD);
+		end
+	end
+
+
+-- MoveHandler ->
 
 	-- MoveOnDown ->
 	function MarkBar.MoveOnDown(self, button)
-		if(button == "LeftButton" and not MarkBarSettings.ToolbarLock) then
+		local frame = self:GetName();
+		if(button == "LeftButton") then
+			if(frame == "MarkBarToolbar" and MarkBarSettings.ToolbarLock) then
+				return;
+			end
 			self:StartMoving();
 		end
 	end
 
 	-- MoveOnUp ->
 	function MarkBar.MoveOnUp(self, button)
-		if(button == "LeftButton" and not MarkBarSettings.ToolbarLock) then
+		local frame = self:GetName();
+		if(button == "LeftButton") then
+			if(frame == "MarkBarToolbar" and MarkBarSettings.ToolbarLock) then
+				return;
+			end
 			self:StopMovingOrSizing();
 		end
 	end
 
-	-- ToolbarMouseOver ->
-	function MarkBar.ToolbarMouseIn(self) -- Over
-		if(MarkBarSettings.ToolbarFade) then
-			self:SetAlpha(MarkBarSettings.ToolbarAlpha);
-		end
-	end
 
-	function MarkBar.ToolbarMouseOut(self) -- Normal
-		if(MarkBarSettings.ToolbarFade) then
-			self:SetAlpha(MarkBarSettings.ToolbarAlphaFade);
-		end
-	end
+-- Tooltip ->
+function MarkBar.Tooltip(self)
+	local frame = self:GetName();
+	GameTooltip:SetOwner(MarkBarToolbar, "ANCHOR_TOPLEFT");
 
-
--- MarkButtons ->
-
-	-- MarkOnClick ->
-	function MarkBar.MarkOnClick(self, button)
+	-- MarkButtons ->
+	if(string.find(frame, "MarkBarMarkM")) then
 		local id = self:GetID();
-
-		if(button == "LeftButton") then
-			SetRaidTargetIcon("target", id);
-		elseif(button == "RightButton") then
-			MarkBar.SetPermaMark(self, id);
-		end
-	end
-
-	-- MarkOnLoad ->
-	function MarkBar.MarkOnLoad(self)
-		self:RegisterEvent("VARIABLES_LOADED");
-		self:RegisterForClicks("LeftButtonUp","RightButtonUp");
-	end
-
-	-- MarkMouseOver ->
-	function MarkBar.MarkMouseIn(self) -- Over
-		local id = self:GetID();
-
-		-- Alpha ->
-		self:SetAlpha(MarkBarSettings.MarkAlpha);
-		if(MarkBarSettings.ToolbarFade) then
-			MarkBarToolbar:SetAlpha(MarkBarSettings.ToolbarAlpha);
-		end
-
-		-- ToolTip ->
-		MarkBar.MarkTooltip(self, id);
-
-	end
-
-	function MarkBar.MarkMouseOut(self) -- Out
-		local id = self:GetID();
-
-		-- Alpha ->
-		self:SetAlpha(MarkBarSettings.MarkAlphaFade);
-		if(MarkBarSettings.ToolbarFade) then
-			MarkBarToolbar:SetAlpha(MarkBarSettings.ToolbarAlphaFade);
-		end
-
-		-- Tooltip ->
-		GameTooltip:Hide();
-	end
-
-	-- MarkTooltip ->
-	function MarkBar.MarkTooltip(self, id)
-		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
-		if(MarkBar.PermaMarks and MarkBar.PermaMarks[id]) then
-			local name = MarkBar.PermaMarks[id];
-			if(UnitExists(name)) then
-				local playerClass, realClass = UnitClass(name);
-				local pmarkText = MarkBar_TIP_MARKED..name;
-				GameTooltip:AddLine(pmarkText,
-									RAID_CLASS_COLORS[realClass].r,
-									RAID_CLASS_COLORS[realClass].g,
-									RAID_CLASS_COLORS[realClass].b);
+		GameTooltip:SetText(MarkBar_RT[id]);
+		if(MarkBar.InRaid or MarkBar.InParty) then
+			if(MarkBar.PermaMarks and MarkBar.PermaMarks[id]) then
+				local name = MarkBar.PermaMarks[id];
+				if(UnitExists(name)) then
+					local playerClass, realClass = UnitClass(name);
+					GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_ASSIGNED_TO..COLOR_CLASS[realClass]..name..COLOR_END);
+				else
+					GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_ASSIGNED_TO..COLOR_GREY..name..MarkBar_TOOLTIP_PMARK_OFFLINE..COLOR_END);
+				end
+				GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_HINT_SOLO);
 			else
-				GameTooltip:AddLine(MarkBar_TIP_MARKED..name..MarkBar_TIP_UNKNOWN, .5, .5, .5);
+				GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_HINT_SOLO);
+				GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_HINT_RAID);
 			end
+		elseif(not MarkBar.Solo) then
+			GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_HINT_NO_LEADER);
 		else
-			GameTooltip:AddLine(MarkBar_TIP_MARK_NOTSET , 1, 1, 1);
+			GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_HINT_SOLO);
 		end
-		GameTooltip:Show();
+		return;
 	end
 
-	-- MarkResetBorder ->
-	function MarkBar.MarkResetBorder(mark)
-		local alias = {MarkBarMarkM1, MarkBarMarkM2, MarkBarMarkM3, MarkBarMarkM4, MarkBarMarkM5, MarkBarMarkM6, MarkBarMarkM7, MarkBarMarkM8}
-		alias[mark]:SetBackdropBorderColor(MarkBarSettings.MarkBorder["r"],
-										   MarkBarSettings.MarkBorder["g"],
-										   MarkBarSettings.MarkBorder["b"]);
+	-- CloseButton ->
+	if(frame == "MarkBarMiniButtonClose") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_CLOSE);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_CLOSE_HINT);
+		return;
 	end
 
-
--- SettingsFrame ->
-
-	-- SettingsToggle ->
-	function MarkBar.SettingsToggle()
-		MarkBar.Print("Settings NYI");
+	-- SettingsButton ->
+	if(frame == "MarkBarMiniButtonSettings") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_SETTINGS);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_SETTINGS_HINT);
+		return;
 	end
+
+	-- Start/StopButton ->
+	if(frame == "MarkBarPermaControlRun") then
+		if(MarkBar.PermaMarks) then
+			GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_STOP);
+			GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_STOP_HINT);
+			return;
+		else
+			GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_START);
+			GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_START_HINT);
+			return;
+		end
+	end
+
+	-- DeleteButton ->
+	if(frame == "MarkBarPermaControlDelete") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_DELETE);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_DELETE_HINT);
+		return;
+	end
+
+	-- ProfileButton ->
+	if(frame == "MarkBarPermaProfile") then
+		GameTooltip:SetText(MarkBar_TOOLTIP_PMARK_PROFILE);
+		GameTooltip:AddLine(MarkBar_TOOLTIP_PMARK_PROFILE_HINT);
+		return;
+	end
+end
 
 
 -- SlashCmdParser ->
 function MarkBar.ParamParser(msg)
  	if msg then
- 		local a,b,c=strfind(msg, "(%S+)");
+ 		local a,b,c = strfind(msg, "(%S+)");
  		if a then
  			return c, strsub(msg, b+2);
  		else	
@@ -367,40 +492,45 @@ function MarkBar.ParamParser(msg)
  	end
 end
 
+
 -- SlashCommands ->
 	function MarkBar.SlashCommands(self, msg)
 		local cmd, param = MarkBar.ParamParser(msg);
 
 		if(cmd == "") then
-			MarkBar.ToolbarToggle();
+			MarkBar.ToggleToolbar();
 		elseif(cmd == "lock") then
-			MarkBar.ToolbarLock();
+			MarkBar.ToggleToolbarLock();
 		elseif(cmd == "config" or cmd == "settings") then
-			-- SettingsFrame
-			MarkBar.SettingsToggle();
+			MarkBar.ToggleSettings();
 		elseif(cmd == "start") then
-			MarkBar.PermaMarksRun = true;
-			MarkBar.Print(MarkBar_MARK_RUN_START);
+			if(not MarkBar.PermaMarksRun) then
+				MarkBar.TogglePermaMarks();
+			end
+			MarkBar.Print(MarkBar_COMMAND_PMARK_START);
 		elseif(cmd == "stop") then
-			MarkBar.PermaMarksRun = false;
-			MarkBar.Print(MarkBar_MARK_RUN_STOP);
+			if(MarkBar.PermaMarksRun) then
+				MarkBar.TogglePermaMarks();
+			end
+			MarkBar.Print(MarkBar_COMMAND_PMARK_STOP);
 		elseif(cmd == "reset") then
 			MarkBar.ResetPermaMark()
 			if(MarkBar.PermaMarksRun) then
 				MarkBar.PermaMarksRun = false;
 			end
-			MarkBar.Print(MarkBar_MARK_RESET);
+			MarkBar.Print(MarkBar_COMMAND_PMARK_DELETE);
 		elseif(cmd == "mark") then
 			if(param == "" or type(tonumber(param)) ~= "number") then
-				MarkBar.Print(COLOR_RED..MarkBar_MARK_PARAM_MISSING..COLOR_END);
+				MarkBar.Print(MarkBar_COMMAND_MARK_MISSING);
 				return;
 			elseif(tonumber(param) >= 0 and tonumber(param) <= 8) then
-				SetRaidTargetIcon("target", tonumber(param));
+				local id = tonumber(param);
+				MarkBar.SetMark("target", id);
 				return;
 			end
-			MarkBar.Print(COLOR_RED..MarkBar_MARK_WRONG_NUMBER);
+			MarkBar.Print(MarkBar_COMMAND_MARK_INVALID);
 		else
-			MarkBar.Print(COLOR_RED..MarkBar_UNKNOWN_COMMAND..COLOR_END);
+			MarkBar.Print(MarkBar_COMMAND_UNKNOWN);
 		end
 	end
 
