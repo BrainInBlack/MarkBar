@@ -12,8 +12,8 @@ Toolbar to quickly assign raid targets and permanently mark of group members.
 
 ## Credits
 
-Daniel "BrainInBlack" Lieberwirth
+[**Daniel Lieberwirth** (BrainInBlack)](https://github.com/BrainInBlack)
 
 ## License
 
-GNU LGPL-3.0 License
+[GNU LGPL-3.0 License](LICENSE.md)
